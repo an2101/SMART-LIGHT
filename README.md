@@ -9,7 +9,7 @@
 ## Cấu trúc thư mục
 
 ```
-├── main    (Folder chứa source code)
+├── main    (Folder chứa source code, dùng ESP-IDF tải về ở VS Code)
 ├── CMakeLists.txt
 └── HT_Nhung_HAP_CK.pdf  (Report)
 └── README.md                  
