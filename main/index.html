@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Light - ESP32-C3 Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: #fff;
+      }
+      .hero {
+        text-align: center;
+        padding: 60px 20px 40px;
+        background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+        color: #222;
+        border-bottom-left-radius: 40px;
+        border-bottom-right-radius: 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      }
+      .hero .group {
+        font-size: 20px;
+        font-style: italic;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+      .hero .project {
+        font-size: 50px;
+        font-weight: bold;
+        letter-spacing: 3px;
+        color: #222;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9),
+          0 0 20px rgba(200, 180, 255, 0.8);
+      }
+      .hero .project i {
+        color: gold;
+        margin-right: 12px;
+        text-shadow: 0 0 12px gold, 0 0 20px orange;
+      }
+      header {
+        padding: 15px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 24px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        backdrop-filter: blur(10px);
+        border-radius: 0 0 20px 20px;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 40px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 18px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+      }
+      .card i {
+        font-size: 42px;
+        margin-bottom: 15px;
+      }
+      .value {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 12px 0;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 8px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        opacity: 0.85;
+      }
+      .btn-led {
+        background-color: #4caf50;
+        color: white;
+      }
+      .btn-mode {
+        background-color: #2196f3;
+        color: white;
+      }
+      .status-on {
+        color: #00ffae;
+        font-weight: bold;
+        text-shadow: 0 0 8px #00ffaa;
+      }
+      .status-off {
+        color: #ff4d6d;
+        font-weight: bold;
+        text-shadow: 0 0 8px #ff4d6d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <div class="group">Group HAP</div>
+      <div class="project">
+        <i class="fas fa-lightbulb"></i> Smart Light
+        <i class="fas fa-lightbulb"></i>
+      </div>
+    </div>
+    <header>ESP32-C3 Dashboard</header>
+    <div class="container">
+      <div class="card">
+        <i class="fas fa-temperature-high"></i>
+        <div class="value"><span id="temp">--</span> °C</div>
+        <div>Temperature</div>
+      </div>
+      <div class="card">
+        <i class="fas fa-tint"></i>
+        <div class="value"><span id="hum">--</span> %</div>
+        <div>Humidity</div>
+      </div>
+      <div class="card">
+        <i class="fas fa-toggle-on"></i>
+        <div class="value">
+          BULB: <span id="led" class="status-off">--</span>
+        </div>
+        <button class="btn-led" onclick="toggleLED()">Toggle BULB</button>
+      </div>
+      <div class="card">
+        <i class="fas fa-cogs"></i>
+        <div class="value">Mode: <span id="mode">--</span></div>
+        <button class="btn-mode" onclick="changeMode()">Change Mode</button>
+      </div>
+    </div>
+
+    <script>
+      function fetchData() {
+        fetch("/data")
+          .then((r) => r.json())
+          .then((d) => {
+            document.getElementById("temp").textContent = d.temp;
+            document.getElementById("hum").textContent = d.hum;
+            document.getElementById("led").textContent = d.led ? "ON" : "OFF";
+            document.getElementById("led").className = d.led
+              ? "status-on"
+              : "status-off";
+            document.getElementById("mode").textContent = d.mode;
+          });
+      }
+      function toggleLED() {
+        fetch("/toggle");
+      }
+      function changeMode() {
+        fetch("/mode");
+      }
+      setInterval(fetchData, 2000);
+      window.onload = fetchData;
+    </script>
+  </body>
+</html>
